@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.SimpleEmail;
 using dotenv.net;
+using EmailService.Infra;
 using EmailService.Worker;
 using EmailService.Worker.Consumer;
 using MassTransit;
@@ -33,6 +34,7 @@ var crential = new BasicAWSCredentials(accessKey, secretKey);
 var awsRegion = RegionEndpoint.GetBySystemName(region);
 
 builder.Services.AddTransient(sp =>  new AmazonSimpleEmailServiceClient(crential, awsRegion));
+builder.Services.AddTransient<AmazonSES>();
 #endregion
 
 builder.Services.AddHostedService<Worker>();
