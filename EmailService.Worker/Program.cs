@@ -9,7 +9,6 @@ using MassTransit;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-DotEnv.Load();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<EmailConsumer>();
@@ -26,12 +25,14 @@ builder.Services.AddMassTransit(x =>
     });
 });
 #region Amazon config
-var accessKey = Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID");
-var secretKey = Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY");
-var region = Environment.GetEnvironmentVariable("AWS_REGION");
+var awsSESConfig = builder.Configuration.GetSection("AWSSES");
 
-var crential = new BasicAWSCredentials(accessKey, secretKey);
-var awsRegion = RegionEndpoint.GetBySystemName(region);
+var crential = new BasicAWSCredentials(
+    awsSESConfig.GetSection("AWS_ACCESS_KEY_ID").Value, 
+    awsSESConfig.GetSection("AWS_SECRET_ACCESS_KEY").Value
+    );
+
+var awsRegion = RegionEndpoint.GetBySystemName(awsSESConfig.GetSection("AWS_REGION").Value);
 
 builder.Services.AddTransient(sp =>  new AmazonSimpleEmailServiceClient(crential, awsRegion));
 builder.Services.AddTransient<AmazonSES>();
