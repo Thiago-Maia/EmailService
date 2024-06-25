@@ -1,0 +1,27 @@
+﻿version: '3.8'
+
+services:
+
+  emailapi:
+    build: .
+    container_name: emailapi
+    ports:
+    - 3001:8081
+    - 3000:8080
+    command: ["dotnet", "EmailServiceAPI.dll"]
+
+  rabbitmq:
+    image: rabbitmq:3.8-management
+    container_name: rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Persiste os dados do RabbitMQ
+    ports:
+      - "5672:5672"   # Porta externa:porta interna / Porta padrão do RabbitMQ
+      - "15672:15672" # Porta externa:porta interna / Porta do painel de controle (opcional)
+    environment:
+      RABBITMQ_DEFAULT_USER: admin  # Substitua com o nome de usuário desejado
+      RABBITMQ_DEFAULT_PASS: admin  # Substitua com a senha desejada
+
+volumes:
+    rabbitmq_data:
+    
